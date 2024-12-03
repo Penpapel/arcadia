@@ -10,8 +10,31 @@ function resizeCanvas() {
     drawText(input.value || "Type Here!");
 }
 
+// Draw a pixel-perfect grid behind the text
+function drawGrid(x, y, width, height, blockSize) {
+    ctx.strokeStyle = "#333"; // Grid line color
+    ctx.lineWidth = 1; // Grid line width
+
+    // Draw vertical lines
+    for (let gx = x; gx <= x + width; gx += blockSize) {
+        ctx.beginPath();
+        ctx.moveTo(gx, y);
+        ctx.lineTo(gx, y + height);
+        ctx.stroke();
+    }
+
+    // Draw horizontal lines
+    for (let gy = y; gy <= y + height; gy += blockSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, gy);
+        ctx.lineTo(x + width, gy);
+        ctx.stroke();
+    }
+}
+
 // Draw the text on the canvas
 function drawText(text) {
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (!text) return;
@@ -27,8 +50,18 @@ function drawText(text) {
         fontSize += 1;
     } while (fontSize < canvas.height * 0.5);
 
-    // Center text on the canvas
+    // Calculate text dimensions
     ctx.font = `${fontSize}px PixelifySans`;
+    const textWidth = ctx.measureText(text).width;
+    const textHeight = fontSize; // Approximate height from font size
+    const x = (canvas.width - textWidth) / 2; // Centered horizontally
+    const y = (canvas.height - textHeight) / 2; // Centered vertically
+
+    // Draw the grid behind the text
+    const blockSize = fontSize / 4; // Adjust for a 6x6 block grid
+    drawGrid(x, y, textWidth, textHeight, blockSize);
+
+    // Draw the text
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "white";
